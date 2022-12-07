@@ -23,13 +23,17 @@ function setup(sprites) {
     //But you can use emojis!
     // https://emojis.wiki/
 
-    sprites[0].image = "🚒"; //A fire engine
+    sprites[0].image = "🧚"; //A fairy (the player)
     sprites[0].x = 100;
     sprites[0].y = 100;
 
     //Putting two sprites together you
     //can make more complicated things.
-    sprites[1].image = "🏠"; //A fire engine
+
+
+
+
+    sprites[1].image = "🍏"; //A fire engine
     sprites[1].x = 300;
     sprites[1].y = 100;
     sprites[2].image = "🔥"; //A fire engine
@@ -50,11 +54,24 @@ function setup(sprites) {
  * @param space     Is spacebar pressed?
  * @returns The current score
  */
+
+ let whichFruit= 0;
+ const fruit= ["🍏", "🥭" , "🍌"]
+
 function frame(sprites, t, dt, up, down, left, right, space) {
+    sprites[0].image = fruit[whichFruit];
+
+    timer += dt;
+
+    if (timer > 4){
+        whichFruit = Math.floor(Math.random()* 3);
+        timer = 0;
+    }
+};
     //Keep references to the sprites in some variables with
     //better names:
-    const truck = sprites[0]; //Easier to remember
-    const house = sprites[1]; //Easier to remember
+    const player = sprites[0]; //Easier to remember
+    const apple = sprites[1]; //Easier to remember
     const fire = sprites[2]; //Easier to remember
 
     //Move the fire engine
@@ -66,26 +83,26 @@ function frame(sprites, t, dt, up, down, left, right, space) {
         //Multiply them together so that the
         //truck moves at the same speed if the
         //computer is fast or slow
-        truck.y += speed * dt;
+        player.y += speed * dt;
     } 
     if (down) {
-        truck.y -= speed * dt;
+        player.y -= speed * dt;
     }
     if (right) {
-        truck.x += speed * dt;
+        player.x += speed * dt;
         //You can flipH a spright so it is facing
         //the other direction
-        truck.flipH = true;
+        player.flipH = true;
     }
     if (left) {
-        truck.x -= speed * dt;
-        truck.flipH = false;
+        player.x -= speed * dt;
+        player.flipH = false;
     }
 
     //If the truck is close to the house
-    if ( distance(truck, house) < 10 ){
+    if ( distance(player, fruit) < 10 ){
         fire.image = ""; //Make the fire go away
-    }
+    
 
     //A very simple repeating animation
     sprites[2].y += Math.sin(t)/10;
@@ -94,8 +111,8 @@ function frame(sprites, t, dt, up, down, left, right, space) {
 };
 
 export default {
-    name: "Homework",
-    instructions: "Write your instructions here",
+    name: "Fake Fruit Ninja",
+    instructions: "move your character ",
     icon: "📝", //Choose an emoji icon
     background: {
         //You can put CSS here to change your background
