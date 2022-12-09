@@ -3,9 +3,6 @@
 let score;  //The players score
 let alive;  //is the 
 
-//You might have some constants that you use
-const speed = 300;  //In pixels per second
-
 //This is a helper function to compute the distance
 //between two sprites
 function distance(a, b) {
@@ -19,26 +16,15 @@ function setup(sprites) {
     score = 0;      //set score to zero
     alive = true;   //Set player to alive
 
-    //Sprite "Images" are just characters,
-    //But you can use emojis!
-    // https://emojis.wiki/
 
-    sprites[0].image = "🧚"; //A fairy (the player)
-    sprites[0].x = 100;
+
+    //A fire engine
+    sprites[0].image = "🧚";
+    sprites[0].x = 300;
     sprites[0].y = 100;
-
-    //Putting two sprites together you
-    //can make more complicated things.
-
-
-
-
-    sprites[1].image = "🍏"; //A fire engine
+    sprites[1].image = ["🍏", "🥭", "🍌"];
     sprites[1].x = 300;
-    sprites[1].y = 100;
-    sprites[2].image = "🔥"; //A fire engine
-    sprites[2].x = 300;
-    sprites[2].y = 120;
+    sprites[1].y = 120;
 
 }
 
@@ -55,43 +41,30 @@ function setup(sprites) {
  * @returns The current score
  */
 
- let whichFruit= 0;
- const fruit= ["🍏", "🥭" , "🍌"]
-
+let whichFruit = 0;
+const fruits = ["🍏", "🥭", "🍌", "💣"]
+let timer = 0;
+let speed = 150;
+const gravity = 450;
 function frame(sprites, t, dt, up, down, left, right, space) {
-    sprites[0].image = fruit[whichFruit];
-
-    timer += dt;
-
-    if (timer > 4){
-        whichFruit = Math.floor(Math.random()* 3);
-        timer = 0;
+    //move the player
+    const player = sprites[0];
+    if (player.image == "💀") {
+        if (space) {
+            score = 0;
+            player.image =  "🧚";
+            sprites[0].y = 150;
+        }
+        return score;
     }
-};
-    //Keep references to the sprites in some variables with
-    //better names:
-    const player = sprites[0]; //Easier to remember
-    const apple = sprites[1]; //Easier to remember
-    const fire = sprites[2]; //Easier to remember
-
-    //Move the fire engine
     if (up) {
-        //Speed is in pixels per second, and
-        //dt is the number of seconds that have
-        //passed since the last frame.
-        //
-        //Multiply them together so that the
-        //truck moves at the same speed if the
-        //computer is fast or slow
         player.y += speed * dt;
-    } 
+    }
     if (down) {
         player.y -= speed * dt;
     }
     if (right) {
         player.x += speed * dt;
-        //You can flipH a spright so it is facing
-        //the other direction
         player.flipH = true;
     }
     if (left) {
@@ -99,25 +72,51 @@ function frame(sprites, t, dt, up, down, left, right, space) {
         player.flipH = false;
     }
 
-    //If the truck is close to the house
-    if ( distance(player, fruit) < 10 ){
-        fire.image = ""; //Make the fire go away
-    
+    //random frt
+    sprites[1].image = fruits[whichFruit];
+    timer += dt;
+    if (timer > 4) {
+        whichFruit = Math.floor(Math.random() * 4);
+        timer = 0;
+    }
 
-    //A very simple repeating animation
-    sprites[2].y += Math.sin(t)/10;
+    //fall
+    const fruit = sprites[1];
 
-    return score;
-};
+    // acceleration and movement
+    speed = speed + gravity * dt;
+    fruit.y = fruit.y - dt * speed;
 
-export default {
-    name: "Fake Fruit Ninja",
-    instructions: "move your character ",
-    icon: "📝", //Choose an emoji icon
-    background: {
-        //You can put CSS here to change your background
-        "background-color": "#555"
-    },
-    frame,
-    setup,
-};
+    if (fruit.y <= 0) {
+        fruit.y = 450;
+        speed = 150;
+        fruit.x = Math.random() * 750;
+    };
+
+    if (distance(player, fruit) <= 20){
+        if (fruit.image == "💣") {
+            score= 0;
+            player.image= "💀";
+
+        } else {
+            fruit.y = 450;
+            speed = 150;
+            fruit.x = Math.random() * 750;
+            score = score + 1;
+
+        }
+    }
+    return score
+}
+
+    export default {
+        name: "Fake Fruit Ninja",
+        instructions: "move your character ",
+        icon: "📝", //Choose an emoji icon
+        background: {
+            //You can put CSS here to change your background
+            "background-color": "#555"
+        },
+        frame,
+        setup,
+    };
